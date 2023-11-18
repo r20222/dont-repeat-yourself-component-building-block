@@ -3,24 +3,14 @@
 	import { Chart } from 'chart.js/auto';
 	export let data;
 	let trashdata = data;
-	// let isJavaScriptEnabled = true;
 	
-
-	// controle of JS aanstaat in de browser
-	let isEnabled = true;
+// controle of JS aanstaat in de browser
+let isEnabled = false;
+	
 
 	// de slice -4 pakt de laatste vier months
 	const laatsteVierMaanden = trashdata.dataApi.totals.months.slice(-4);
-	// console.log(laatsteVierMaanden[0].debris_extracted);
 
-
-	// Gegevens en configuratie
-	// const labels = [
-	// 	laatsteVierMaanden[0].month,
-	// 	laatsteVierMaanden[1].month,
-	// 	laatsteVierMaanden[2].month,
-	// 	laatsteVierMaanden[3].month
-	// ];
 
 	// gebruik de Intl browser API om nummers om te zetten in maandnaam
 	const monthNames = laatsteVierMaanden.map(item => {
@@ -30,9 +20,35 @@
 		return new Intl.DateTimeFormat('nl-NL', { month: 'long' }).format(date);
 	});
 
-console.log(monthNames);
+	
+	// Functie om de kleurinstelling voor Chart.js te configureren op basis van dark mode
+	function configureChartColor() {
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			// Dark mode wordt gebruikt
+			Chart.defaults.color = 'white';
+		} else {
+			// Dark mode wordt niet gebruikt
+			Chart.defaults.color = '#143653';
+		}
+	}
+	
+	onMount(() => {
 
-	data = {
+		console.log('onMount triggered');
+    
+
+		configureChartColor();
+		// Voeg de js-enabled klasse toe wanneer isEnabled true is
+		// if (isEnabled) {
+		// 	document.querySelector('table').classList.add('js-enabled');
+		// }
+
+		isEnabled = true;
+		console.log('isEnabled:', isEnabled);
+
+
+
+		data = {
 		labels: monthNames,
 		datasets: [
 			{
@@ -49,31 +65,17 @@ console.log(monthNames);
 			}
 		]
 	};
-	// Functie om de kleurinstelling voor Chart.js te configureren op basis van dark mode
-	function configureChartColor() {
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			// Dark mode wordt gebruikt
-			Chart.defaults.color = 'white';
-		} else {
-			// Dark mode wordt niet gebruikt
-			Chart.defaults.color = '#143653';
-		}
-	}
-	
-	onMount(() => {
-		configureChartColor();
-		// Voeg de js-enabled klasse toe wanneer isEnabled true is
-		// if (isEnabled) {
-		// 	document.querySelector('table').classList.add('js-enabled');
-		// }
 
-		//  let data = data;
-		const ctx = document.getElementById('line-chart').getContext('2d');
+
+	// Gebruik een setTimeout om ervoor te zorgen dat er wat tijd is om de DOM op te zetten voordat de grafiek wordt geïnitialiseerd
+	setTimeout(() => {
+	const ctx = document.getElementById('uniqueCanvasId').getContext('2d');
 		new Chart(ctx, {
 			type: 'line',
 			data: data
 		});
-	});
+	}, 100);
+});
 </script>
 
 <h2>Trash collected over time</h2>
@@ -82,27 +84,26 @@ console.log(monthNames);
 
 
 {#if isEnabled}
-<canvas id="line-chart" width="400" height="200" />
-
+	<canvas id="uniqueCanvasId" width="400" height="200" />
 {:else}
-<table >
-	<tr>
-		<th>{monthNames[0]}</th>
-		<td>{laatsteVierMaanden[0].debris_extracted}</td>
-	</tr>
-	<tr>
-		<th>{monthNames[1]}</th>
-		<td>{laatsteVierMaanden[1].debris_extracted}</td>
-	</tr>
-	<tr>
-		<th>{monthNames[2]}</th>
-		<td>{laatsteVierMaanden[2].debris_extracted}</td>
-	</tr>
-	<tr>
-		<th>{monthNames[3]}</th>
-		<td>{laatsteVierMaanden[3].debris_extracted}</td>
-	</tr>
-</table>
+	<table >
+		<tr>
+			<th>{monthNames[0]}</th>
+			<td>{laatsteVierMaanden[0].debris_extracted}</td>
+		</tr>
+		<tr>
+			<th>{monthNames[1]}</th>
+			<td>{laatsteVierMaanden[1].debris_extracted}</td>
+		</tr>
+		<tr>
+			<th>{monthNames[2]}</th>
+			<td>{laatsteVierMaanden[2].debris_extracted}</td>
+		</tr>
+		<tr>
+			<th>{monthNames[3]}</th>
+			<td>{laatsteVierMaanden[3].debris_extracted}</td>
+		</tr>
+	</table>
 {/if}
 
 <style>
@@ -137,8 +138,8 @@ console.log(monthNames);
 	table{
 		color:green;
 	}
-	.js-enabled{
+	/* .js-enabled{
 		color:yellow;
-	}
+	} */
 	
 </style>
