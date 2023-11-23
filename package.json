@@ -21,6 +21,8 @@
 		"chart.js": "^4.4.0",
 		"graphql": "^16.8.1",
 		"graphql-request": "^6.1.0",
+		"highcharts": "^11.2.0",
+		"highcharts-more": "^0.1.7",
 		"mapbox-gl": "^2.15.0"
 	}
 }

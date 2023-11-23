@@ -1,13 +1,17 @@
 <script>
 	import { onMount } from 'svelte';
-	import { Chart } from 'chart.js/auto';
+	// import { Chart } from 'chart.js/auto';
+	// import { Highcharts } from 'highcharts';
+	// import { HighchartsMore } from 'highcharts/highcharts-more';
+
 	export let data;
 	let trashdata = data;
-	
-// controle of JS aanstaat in de browser
-let isEnabled = false;
-	
 
+
+	// controle of JS aanstaat in de browser
+	let isEnabled = false;
+	
+	
 	// de slice -4 pakt de laatste vier months
 	const laatsteVierMaanden = trashdata.dataApi.totals.months.slice(-4);
 
@@ -21,59 +25,123 @@ let isEnabled = false;
 	});
 
 	
-	// Functie om de kleurinstelling voor Chart.js te configureren op basis van dark mode
-	function configureChartColor() {
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			// Dark mode wordt gebruikt
-			Chart.defaults.color = 'white';
-		} else {
-			// Dark mode wordt niet gebruikt
-			Chart.defaults.color = '#143653';
-		}
-	}
+	// // Functie om de kleurinstelling voor Chart.js te configureren op basis van dark mode
+	// function configureChartColor() {
+	// 	if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+	// 		// Dark mode wordt gebruikt
+	// 		Chart.defaults.color = 'white';
+	// 	} else {
+	// 		// Dark mode wordt niet gebruikt
+	// 		Chart.defaults.color = '#143653';
+	// 	}
+	// }
 	
 	onMount(() => {
-
-		console.log('onMount triggered');
+	// 	console.log('onMount triggered');
     
-
-		configureChartColor();
-		// Voeg de js-enabled klasse toe wanneer isEnabled true is
-		// if (isEnabled) {
-		// 	document.querySelector('table').classList.add('js-enabled');
-		// }
+		console.log(monthNames[0])
+	// 	// configureChartColor();
+	// 	// Voeg de js-enabled klasse toe wanneer isEnabled true is
+	// 	// if (isEnabled) {
+	// 	// 	document.querySelector('table').classList.add('js-enabled');
+	// 	// }
 
 		isEnabled = true;
-		console.log('isEnabled:', isEnabled);
+	// 	console.log('isEnabled:', isEnabled);
 
 
 
-		data = {
-		labels: monthNames,
-		datasets: [
-			{
-				label: 'Trash collected in kilogram',
-				data: [
-					laatsteVierMaanden[0].debris_extracted,
-					laatsteVierMaanden[1].debris_extracted,
-					laatsteVierMaanden[2].debris_extracted,
-					laatsteVierMaanden[3].debris_extracted
-				],
-				fill: true,
-				borderColor: 'rgb(75, 192, 192)',
-				tension: 0.1
-			}
-		]
-	};
+	// 	data = {
+	// 	labels: monthNames,
+	// 	datasets: [
+	// 		{
+	// 			label: 'Trash collected in kilogram',
+	// 			data: [
+	// 				laatsteVierMaanden[0].debris_extracted,
+	// 				laatsteVierMaanden[1].debris_extracted,
+	// 				laatsteVierMaanden[2].debris_extracted,
+	// 				laatsteVierMaanden[3].debris_extracted
+	// 			],
+	// 			fill: true,
+	// 			borderColor: 'rgb(75, 192, 192)',
+	// 			tension: 0.1
+	// 		}
+	// 	]
+	// };
 
+		// HighchartsMore(Highcharts);
 
 	// Gebruik een setTimeout om ervoor te zorgen dat er wat tijd is om de DOM op te zetten voordat de grafiek wordt geïnitialiseerd
 	setTimeout(() => {
-	const ctx = document.getElementById('uniqueCanvasId').getContext('2d');
-		new Chart(ctx, {
-			type: 'line',
-			data: data
-		});
+	// const ctx = document.getElementById('uniqueCanvasId').getContext('2d');
+	// 	new Chart(ctx, {
+	// 		type: 'line',
+	// 		data: data
+	// 	});
+
+		Highcharts.chart('container', {
+      chart: {
+        type: 'packedbubble',
+		// backgroundColor: '#5CC8DE'
+      },
+	  title: {
+    	text: ''
+  		},
+      plotOptions: {
+        packedbubble: {
+        //   minPointSize: 500,
+        //   maxPointSize: 1000
+		maxSize: '100%',
+            minSize: '40%'
+        }
+      },
+      series: [{
+		name: monthNames[0],
+        data: [{
+			name: monthNames[0],
+			value: laatsteVierMaanden[0].debris_extracted,
+			marker: {
+            symbol: 'url(/square-image-bottle-4.png)'
+            // width: 310, 
+            // height: 'auto' 
+        }
+		}]
+      }, {
+		name: monthNames[1],
+        data: [{
+			name: monthNames[1],
+			value: laatsteVierMaanden[1].debris_extracted,
+			marker: {
+            symbol: 'url(/square-image-bottle-2.png)'
+            // width: 310, 
+            // height: 'auto' 
+        }
+		}]
+      },{
+		name: monthNames[2],
+        data: [{
+			name: monthNames[2],
+			value: laatsteVierMaanden[2].debris_extracted,
+			fillColor: 'blue',
+			marker: {
+            symbol: 'url(/square-image-bottle-3.png)'
+            // width: 310, 
+            // height: 'auto' 
+        }
+		}]
+      },{
+		name: monthNames[3],
+        data: [{
+			name: monthNames[3],
+			value: laatsteVierMaanden[3].debris_extracted,
+			marker: {
+            symbol: 'url(/square-image-bottle.png)'
+            // width: 1300, 
+            // height: 'auto' 
+        }
+		}]
+      }]
+    });
 	}, 100);
 });
 </script>
@@ -84,7 +152,8 @@ let isEnabled = false;
 
 
 {#if isEnabled}
-	<canvas id="uniqueCanvasId" width="400" height="200" />
+	<!-- <canvas id="uniqueCanvasId" width="400" height="200" /> -->
+	<section id="container"></section>
 {:else}
 	<table >
 		<tr>
@@ -135,11 +204,13 @@ let isEnabled = false;
 			--iconSize: 2rem;
 		}
 	}
-	table{
-		color:green;
+	#container {
+    width: 100%;
+    height: 500px; 
+    }
+	table th{
+		display: flex;
+		justify-content: start;
 	}
-	/* .js-enabled{
-		color:yellow;
-	} */
-	
+
 </style>
